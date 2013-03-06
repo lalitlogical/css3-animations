@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<!-- jqPlot renderers and plugins -->
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css" />
+		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+		<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+
+		<!-- end jqPlot renderers and plugins -->
+		<style type="text/css">
+			#container {
+				width: 98%;
+				height: 192px;
+				position: relative;
+				margin: 40px auto;
+				border: 1px solid #CCC;
+				-webkit-perspective: 800px;
+				-moz-perspective: 800px;
+				-o-perspective: 800px;
+				perspective: 800px;
+			}
+
+			.card {
+				width: 142px;
+				height: 192px;
+				position: absolute;
+				-webkit-transition: -webkit-transform 1s;
+				-moz-transition: -moz-transform 1s;
+				-o-transition: -o-transform 1s;
+				transition: transform 1s;
+				-webkit-transform-style: preserve-3d;
+				-moz-transform-style: preserve-3d;
+				-o-transform-style: preserve-3d;
+				transform-style: preserve-3d;
+				-moz-animation-duration: 3s;
+				-webkit-animation-duration: 3s;
+				animation-duration: 3s;
+				-moz-animation-name: flipper;
+				-webkit-animation-name: flipper;
+				animation-name: flipper;
+				-moz-animation-iteration-count: infinite;
+				-webkit-animation-iteration-count: infinite;
+				animation-iteration-count: infinite;
+				-moz-animation-direction: alternate;
+				-webkit-animation-direction: alternate;
+				animation-direction: alternate;
+			}
+
+			.card .figure {
+				display: block;
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				backface-visibility: hidden;
+				-webkit-backface-visibility: hidden;
+				-moz-backface-visibility: hidden;
+				-o-backface-visibility: hidden;
+			}
+
+			.card .front {
+				background: transparent;
+			}
+			.card .back {
+				background: transparent;
+				-webkit-transform: rotateY( 180deg );
+				-moz-transform: rotateY( 180deg );
+				-o-transform: rotateY( 180deg );
+				transform: rotateY( 180deg );
+			}
+
+			.card:hover {
+				-webkit-transform: rotateY( 180deg );
+				-moz-transform: rotateY( 180deg );
+				-o-transform: rotateY( 180deg );
+				transform: rotateY( 180deg );
+			}
+
+			.card.flipped {
+				-webkit-transform: rotateY( 180deg );
+				-moz-transform: rotateY( 180deg );
+				-o-transform: rotateY( 180deg );
+				transform: rotateY( 180deg );
+			}
+
+			/*
+			 #card {
+			 transform-origin: right center;
+			 }
+			 #card.flipped {
+			 transform: translateX( -100% ) rotateY( -180deg );
+			 } */
+
+			@keyframes flipper {
+			from {
+				-moz-transform: rotateY(0deg);
+				-webkit-transform: rotateY(0deg);
+				transform: rotateY(0deg);
+			}
+
+			to {
+				-moz-transform: rotateY(180deg);
+				-webkit-transform: rotateY(180deg);
+				transform: rotateY(180deg);
+			}
+			}
+
+			@-moz-keyframes
+			flipper {from {
+				-moz-transform: rotateY(0deg);
+				-webkit-transform: rotateY(0deg);
+				transform: rotateY(0deg);
+			}
+
+			to {
+				-moz-transform: rotateY(180deg);
+				-webkit-transform: rotateY(180deg);
+				transform: rotateY(180deg);
+			}
+			}
+
+			@-webkit-keyframes
+			flipper {from {
+				-moz-transform: rotateY(0deg);
+				-webkit-transform: rotateY(0deg);
+				transform: rotateY(0deg);
+			}
+
+			to {
+				-moz-transform: rotateY(180deg);
+				-webkit-transform: rotateY(180deg);
+				transform: rotateY(180deg);
+			}
+			}
+		</style>
+
+		<script class="code" type="text/javascript">
+			$(document).ready(function() {
+
+				var cards = 52;
+				var cardDeckArr = [];
+
+				var card = 'Club';
+				for ( rank = 1; rank <= 52; rank++) {
+					if (rank >= 14 && rank <= 26) {
+						card = 'Spade';
+					} else if (rank >= 27 && rank <= 39) {
+						card = 'Diamond';
+					} else if (rank >= 40 && rank <= 52) {
+						card = 'Heart';
+					}
+
+					var cardName = '';
+					if (rank % 13 == 1) {
+						cardName = card + '_A.png';
+					} else if (rank % 13 == 0) {
+						cardName = card + '_K.png';
+					} else if (rank % 13 == 12) {
+						cardName = card + '_Q.png';
+					} else if (rank % 13 == 11) {
+						cardName = card + '_J.png';
+					} else if ((rank % 13) >= 2 && (rank % 13) <= 10) {
+						cardName = card + '_' + (rank % 13) + '.png';
+					}
+					cardDeckArr.push(cardName)
+				}
+				
+				//Create Dynamic Card Deck
+				createCardDeck(cardDeckArr,cards);
+				
+				//Intilize Refresh Button Click event
+				$('#refresh').click(function() {
+					createCardDeck(cardDeckArr,cards);
+				});
+			});
+
+			function createCardDeck(cardDeckArr,cards) {
+				cardDeckArr = shuffle(cardDeckArr);
+				var left = ($('#container').width() - 142) / (cards - 1);
+				var xCord = 0;
+				$('#container').html('');
+				for ( i = 0; i < cards; i++) {
+					var innerHtml = '<div class="card" style="left:' + xCord + 'px;">';
+					innerHtml = innerHtml + '<img class="figure front" src="plugins/assets/Final Card Deck/DeckStyleBlueWhite.png" />';
+					innerHtml = innerHtml + '<img class="figure back" src="plugins/assets/Final Card Deck/' + cardDeckArr[i] + '" />';
+					innerHtml = innerHtml + '</div>';
+					$('#container').append(innerHtml);
+					xCord += left;
+				}
+			}
+
+			function shuffle(array) {
+				var tmp, current, top = array.length;
+				if (top) {
+					while (--top) {
+						current = Math.floor(Math.random() * (top + 1));
+						tmp = array[current];
+						array[current] = array[top];
+						array[top] = tmp
+					}
+				}
+				return array
+			}
+		</script>
+
+	</head>
+	<body>
+		<div id="container"></div>
+		<button id="refresh">
+			Refresh
+		</button>
+	</body>
+</html>
