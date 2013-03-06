@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  	<!-- jqPlot renderers and plugins -->
+		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+
+		<!-- end jqPlot renderers and plugins -->
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			.magnify {
+				float: left;
+				width: 200px;
+				margin: 50px;
+				position: relative
+			}
+
+			.small {
+				display: block;
+				float: left;
+			}
+			
+			.glass {
+				width: 150px;
+				height: 150px;
+				position: absolute;
+				display: none;
+				border: 1px solid #CCC;
+				opacity: 0.3;
+				background-color:#FFF;
+			}
+
+			.large {
+				width: 150px;
+				height: 150px;
+				/* box-shadow: 0 0 0 7px rgba(255,255,255,0.87), 0 0 7px 7px rgba(0,0,0,0.25), inset 0 0 33px 2px rgba(0,0,0,0.3); */
+				/*hide the glass by default*/
+				display: none;
+				position: absolute;
+				left: 250px;
+				/*Lets load up the large image first*/
+				background-repeat: no-repeat;
+			}
+
+		</style>
+
+		<script class="code" type="text/javascript">
+			$(document).ready(function() {
+				var nativeW = 0, nativeH = 0;
+				var image_src = '';
+				$('.magnify').mousemove(function(e) {
+					
+					$(this).children('.large').css('background-image', 'url(' + $(this).children('.small').attr('src') + ')');
+					if (image_src != $(this).children('.small').attr('src')) {
+						image_src = $(this).children('.small').attr('src');
+						var imageObj = new Image();
+						imageObj.src = image_src;
+
+						nativeW = imageObj.width;
+						nativeH = imageObj.height;
+
+					} else {
+						var mx = e.pageX - $(this).offset().left;
+						var my = e.pageY - $(this).offset().top;
+						if (mx < $(this).width() && my < $(this).height() && mx > 0 && my > 0) {
+							$(this).children('.large').css('display', 'block');
+							$(this).children('.glass').css('display', 'block');
+						} else {
+							$(this).children('.large').css('display', 'none');
+							$(this).children('.glass').css('display', 'block');
+						}
+
+						if ($('.large').is(':visible')) {
+							var px = mx - $(this).children('.glass').width() / 2;
+							var py = my - $(this).children('.glass').height() / 2;
+							
+							$(this).children('.glass').css({
+								left: px ,
+								top: py
+							});
+
+							var rx = Math.round(mx / $(this).children('.small').width() * nativeW - $(this).children('.large').width() / 2) * -1;
+							var ry = Math.round(my / $(this).children('.small').height() * nativeH - $(this).children('.large').height() / 2) * -1;
+							var bgp = rx + 'px ' + ry + 'px';
+
+							$(this).children('.large').css({
+								backgroundPosition : bgp
+							});
+						}
+					}
+				})
+			});
+		</script>
+
+	</head>
+	<body>
+		<div class="magnify">
+			<img class="small" src="http://thecodeplayer.com/uploads/media/iphone.jpg" width="200" />
+			<div class="glass"></div>
+			<div class="large"></div>
+		</div>
+	</body>
+</html>
